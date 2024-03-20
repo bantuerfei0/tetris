@@ -286,7 +286,7 @@ class Tetris:
     
     def run(self) -> None:
         '''main game loop'''
-        self.create_tetromino(True) # REMOVE LATER?
+        self.create_tetromino(True) # REMOVE LATER
         self.running = True
         while self.running:
             for event in pygame.event.get():
