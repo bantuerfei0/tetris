@@ -10,11 +10,13 @@ class AssetManager():
     TILE_SIZE = 40
     TILESET_STRUCTURE = [TileType.BLUE, TileType.GREEN, TileType.NAVY, TileType.ORANGE, TileType.PURPLE, TileType.RED, TileType.YELLOW]
     TRANS_TILE_ALPHA = 128
+    BUTTON_NAMES = ['ui_button_credits', 'ui_button_exit', 'ui_button_leaderboard', 'ui_button_options', 'ui_button_play']
     
     def __init__(self) -> None:
         self.library : dict = dict() # dictionary of assets
     
     def load(self) -> None:
+        self.library['icon'] = pygame.image.load('./assets/icon.png').convert_alpha()
         self.library['tiles'] = dict()
         # LOADING TILESET AND SLICING IT INTO PIECES
         # convert_alpha() apparently lets pygame draw the surface faster
@@ -36,7 +38,19 @@ class AssetManager():
         # TODO: for game effects
         # LOADING UI
         self.library['ui'] = dict()
+        self.library['ui']['title'] = pygame.image.load('./assets/ui/logo.png').convert_alpha()
+        self.library['ui']['buttons'] = dict()
+        for name in AssetManager.BUTTON_NAMES:
+            temp_list = [
+                pygame.image.load(f'./assets/ui/{name}_default.png').convert_alpha(),
+                pygame.image.load(f'./assets/ui/{name}_hover.png').convert_alpha(),
+                pygame.image.load(f'./assets/ui/{name}_click.png').convert_alpha()
+                ]
+            self.library['ui']['buttons'][name] = temp_list
         # TODO: add stuff here
-        print(self.library)
     def get_tile_assets(self):
         return self.library['tiles']
+    def get_ui_assets(self):
+        return self.library['ui']
+    def get_icon(self):
+        return self.library['icon']

@@ -7,6 +7,11 @@ For cleaner code and modularity
 import pygame
 from enum import Enum
 
+class ButtonState(Enum):
+    DEFAULT = 0
+    HOVER = 1
+    PRESSED = 2
+
 class TileType(Enum):
     '''used to define the type of a tile (color)'''
     EMPTY = 0
@@ -20,11 +25,10 @@ class TileType(Enum):
 
 class GameState(Enum):
     TITLE = 0
-    OPTIONS = 1
-    BINDS = 2
-    PLAY = 3
-    PAUSE = 4
-    SCORES = 5
+    PLAY = 1
+    LEADERBOARD = 2
+    OPTIONS = 3
+    CREDITS = 4
 
 class Tetromino(Enum):
     '''used to define the default shape of tetrominos'''
