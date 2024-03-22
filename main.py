@@ -128,7 +128,7 @@ class Game:
                                 else:
                                     self.button_states[button_id] = enums.ButtonState.DEFAULT
         self.tetris.handle_event(event)
-    
+        
     def handle_button_press(self, button_id):
         match button_id:
             case 'ui_button_exit':

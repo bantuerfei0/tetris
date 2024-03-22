@@ -22,19 +22,14 @@ class AssetManager():
         # LOADING TILESET AND SLICING IT INTO PIECES
         # convert_alpha() apparently lets pygame draw the surface faster
         tileset : pygame.Surface = pygame.image.load('./assets/tileset.png').convert_alpha()
-        opaque_tiles = dict(dict([[i, [None for j in range(AssetManager.TILESET_HEIGHT)]] for i in AssetManager.TILESET_STRUCTURE]))
-        transparent_tiles = dict(dict([[i, [None for j in range(AssetManager.TILESET_HEIGHT)]] for i in AssetManager.TILESET_STRUCTURE]))
+        tiles = dict(dict([[i, [None for j in range(AssetManager.TILESET_HEIGHT)]] for i in AssetManager.TILESET_STRUCTURE]))
         for i in range(AssetManager.TILESET_HEIGHT):
             for j in range(AssetManager.TILESET_WIDTH):
                 tile = pygame.Surface((AssetManager.TILE_SIZE, AssetManager.TILE_SIZE))
                 tile.blit(tileset, (0, 0), (j*AssetManager.TILE_SIZE, i*AssetManager.TILE_SIZE, AssetManager.TILE_SIZE, AssetManager.TILE_SIZE))
-                opaque_tiles[AssetManager.TILESET_STRUCTURE[j]][i] = tile
+                tiles[AssetManager.TILESET_STRUCTURE[j]][i] = tile
                 # create the transparent version of the tile for the ghosting effect
-                trans_tile = tile.copy()
-                trans_tile.set_alpha(AssetManager.TRANS_TILE_ALPHA)
-                transparent_tiles[AssetManager.TILESET_STRUCTURE[j]][i] = trans_tile
-        self.library['tiles']['opaque'] = opaque_tiles
-        self.library['tiles']['transparent'] = transparent_tiles
+        self.library['tiles'] = tiles
         # LOADING VFX
         # TODO: for game effects
         # LOADING UI
@@ -65,11 +60,11 @@ class AssetManager():
         self.library['ui']['score_label'] = pygame.image.load('./assets/ui/text/text_score.png').convert_alpha()
         self.library['ui']['grid'] = pygame.image.load('./assets/ui/game_border_grid.png').convert_alpha()
         self.library['ui']['tetromino_box'] = pygame.image.load('./assets/ui/game_piece.png').convert_alpha()
-        self.library['ui']['game_small_frame'] = pygame.image.load('./assets/ui/game_piece.png').convert_alpha()
+        self.library['ui']['small_frame'] = pygame.image.load('./assets/ui/game_small_frame.png').convert_alpha()
 
         numberset = pygame.image.load('./assets/ui/text/number_sheet.png').convert_alpha()
         for i in range(10):
-            tile = pygame.Surface((40, 40))
+            tile = pygame.Surface((40, 40), pygame.SRCALPHA)
             tile.blit(numberset, (0, 0), (i*AssetManager.TILE_SIZE, 0, AssetManager.TILE_SIZE, AssetManager.TILE_SIZE))
             self.library['ui'][str(i)] = tile
 
