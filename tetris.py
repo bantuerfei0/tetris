@@ -1,3 +1,9 @@
+'''
+bantuerfei
+2024-03-22
+TODO:
+
+'''
 import pygame
 import random
 from tile import Tile
@@ -10,7 +16,7 @@ class Tetris:
     
     GRAVITY_CONSTANT : int = 1000
     REPEATED_ROTATION_DELAY : int = 180
-    REPEATED_SHIFT_DELAY : int = 100
+    REPEATED_SHIFT_DELAY : int = 110
     GRID_BUFFER : int = 2 # hidden part above the screen
     GRID_WIDTH : int = 10
     GRID_HEIGHT : int = 20
@@ -104,9 +110,12 @@ class Tetris:
         # self.grid : list[list[Tile]]= [[Tile(random.choice(list(enums.TileType)), True if random.randint(0, 1) == 1 else 0, self.assets) for i in range(Tetris.GRID_WIDTH)] for j in range(Tetris.GRID_HEIGHT+Tetris.GRID_BUFFER)]
 
     def handle_event(self, event : pygame.event.Event) -> None:
+        
         match (event.type):
+            
             case pygame.QUIT:
                 self.running = False
+
             case pygame.KEYDOWN:
                 if self.pause:
                     match (event.key):
@@ -365,6 +374,6 @@ class Tetris:
         if self.pause:
             surface.blit(self.pause_background, (0, 0))
             surface.blit(self.assets.get_ui_assets()['title'], (555, 100))
-            surface.blit(self.assets.get_ui_assets()['paused_label'], (725, 350))
+            surface.blit(self.assets.get_ui_assets()['paused_label'], (730, 350))
             for button_id in self.BUTTON_IDS:
                 surface.blit(self.assets.get_ui_assets()['buttons'][button_id][self.button_states[button_id].value], self.button_positions[button_id])
