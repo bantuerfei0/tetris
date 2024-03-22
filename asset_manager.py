@@ -11,6 +11,7 @@ class AssetManager():
     TILESET_STRUCTURE = [TileType.BLUE, TileType.GREEN, TileType.NAVY, TileType.ORANGE, TileType.PURPLE, TileType.RED, TileType.YELLOW]
     TRANS_TILE_ALPHA = 128
     BUTTON_NAMES = ['ui_button_credits', 'ui_button_exit', 'ui_button_leaderboard', 'ui_button_options', 'ui_button_play']
+    PAUSE_BUTTON_NAMES = ['ui_button_resume', 'ui_button_tomenu']
     
     def __init__(self) -> None:
         self.library : dict = dict() # dictionary of assets
@@ -38,7 +39,7 @@ class AssetManager():
         # TODO: for game effects
         # LOADING UI
         self.library['ui'] = dict()
-        self.library['ui']['title'] = pygame.image.load('./assets/ui/logo.png').convert_alpha()
+        self.library['ui']['title'] = pygame.image.load('./assets/ui/text/logo.png').convert_alpha()
         self.library['ui']['buttons'] = dict()
         for name in AssetManager.BUTTON_NAMES:
             temp_list = [
@@ -47,7 +48,31 @@ class AssetManager():
                 pygame.image.load(f'./assets/ui/{name}_click.png').convert_alpha()
                 ]
             self.library['ui']['buttons'][name] = temp_list
+        for name in AssetManager.PAUSE_BUTTON_NAMES:
+            temp_list = [
+                pygame.image.load(f'./assets/ui/{name}_default.png').convert_alpha(),
+                pygame.image.load(f'./assets/ui/{name}_hover.png').convert_alpha(),
+                pygame.image.load(f'./assets/ui/{name}_click.png').convert_alpha()
+                ]
+            self.library['ui']['buttons'][name] = temp_list
         # TODO: add stuff here
+        self.library['ui']['background'] = pygame.image.load('./assets/ui/background.png').convert_alpha()
+        self.library['ui']['hold_label'] = pygame.image.load('./assets/ui/text/text_hold.png').convert_alpha()
+        self.library['ui']['level_label'] = pygame.image.load('./assets/ui/text/text_level.png').convert_alpha()
+        self.library['ui']['lines_label'] = pygame.image.load('./assets/ui/text/text_lines.png').convert_alpha()
+        self.library['ui']['next_label'] = pygame.image.load('./assets/ui/text/text_next.png').convert_alpha()
+        self.library['ui']['paused_label'] = pygame.image.load('./assets/ui/text/text_paused.png').convert_alpha()
+        self.library['ui']['score_label'] = pygame.image.load('./assets/ui/text/text_score.png').convert_alpha()
+        self.library['ui']['grid'] = pygame.image.load('./assets/ui/game_border_grid.png').convert_alpha()
+        self.library['ui']['tetromino_box'] = pygame.image.load('./assets/ui/game_piece.png').convert_alpha()
+        self.library['ui']['game_small_frame'] = pygame.image.load('./assets/ui/game_piece.png').convert_alpha()
+
+        numberset = pygame.image.load('./assets/ui/text/number_sheet.png').convert_alpha()
+        for i in range(10):
+            tile = pygame.Surface((40, 40))
+            tile.blit(numberset, (0, 0), (i*AssetManager.TILE_SIZE, 0, AssetManager.TILE_SIZE, AssetManager.TILE_SIZE))
+            self.library['ui'][str(i)] = tile
+
     def get_tile_assets(self):
         return self.library['tiles']
     def get_ui_assets(self):
