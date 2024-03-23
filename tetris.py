@@ -14,7 +14,6 @@ from asset_manager import AssetManager
 
 class Tetris:
     
-    GRAVITY_CONSTANT : int = 1000
     REPEATED_ROTATION_DELAY : int = 180
     REPEATED_SHIFT_DELAY : int = 110
     GRID_BUFFER : int = 2 # hidden part above the screen
@@ -370,7 +369,7 @@ class Tetris:
         line_surface = self.draw_number(f'{self.lines:02}') # surface, 1090, 810,
         line_surface_rect = line_surface.get_bounding_rect()
         surface.blit(line_surface, (1078 + (80 - line_surface_rect.width) / 2, 805))
-
+        surface.blit(self.assets.get_tile_assets()[enums.TileType.BLUE][0], (0, 0))
         if self.pause:
             surface.blit(self.pause_background, (0, 0))
             surface.blit(self.assets.get_ui_assets()['title'], (555, 100))

@@ -24,7 +24,6 @@ import random
 import enums
 from asset_manager import AssetManager
 from tetris import Tetris
-import colors
 
 pygame.init()
 
@@ -38,7 +37,7 @@ class Game:
         if seed:
             random.seed(seed)
         self._surface = pygame.display.set_mode(Game.SCREEN_SIZE, Game.SCREEN_FLAGS)
-        self.surface = pygame.surface.Surface(Game.SCREEN_SIZE)
+        self.surface = pygame.surface.Surface(Game.SCREEN_SIZE, pygame.SRCALPHA)
         self.state = enums.GameState.TITLE # used to control what gets drawn
         self.clock = pygame.time.Clock() # used to maintain a fixed time step
         self.asset_manager = AssetManager() # for retrieval of assets
