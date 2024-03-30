@@ -11,15 +11,16 @@ class Button(Drawable):
     '''
     represents a pressable element in a screen
     '''
-    
-    def __init__(self, surface: pygame.Surface, x: int = 0, y: int = 0, states : list[pygame.Surface] = [None, None, None], func : function = None) -> None:
-        super().__init__(surface, x, y)
+
+    def __init__(self, x: int = 0, y: int = 0, states : dict = None, func = None, func_arg = None) -> None:
+        super().__init__(None, x, y)
         self.states = states
         self.func = func
+        self.func_arg = func_arg
         self.state : ButtonState = ButtonState.DEFAULT
         self.previous_state : ButtonState = None
-        self.surface = self.states[self.state.value]
-        self.bounding_rect = self.surface.get_bounding_rect()
+        self.surface : pygame.Surface = self.states[self.state]
+        self.bounding_rect = self.surface.get_bounding_rect().move(self.x, self.y)
     
     def change_state(self, new_state : ButtonState):
         self.previous_state = self.state
@@ -34,7 +35,7 @@ class Button(Drawable):
                 if event.button == 1 and self.bounding_rect.collidepoint(event.pos):
                     if self.state == ButtonState.PRESSED:
                         self.action()
-                        self.change_state(ButtonState.HOVER)
+                        self.change_state(ButtonState.DEFAULT)
             case pygame.MOUSEMOTION:
                 if self.bounding_rect.collidepoint(event.pos):
                     if self.state != ButtonState.PRESSED:
@@ -44,15 +45,20 @@ class Button(Drawable):
 
     def update(self, dt, **kwargs):
         if self.state != self.previous_state:
-            self.surface = self.states[self.state.value]
-            self.bounding_rect = self.surface.get_bounding_rect()
-            self.dirty = True
+            self.surface = self.states[self.state]
+            self.bounding_rect = self.surface.get_bounding_rect().move(self.x, self.y)
 
     def draw(self, dest: pygame.Surface) -> None:
-        if self.dirty and self.surface:
-            dest.blit(self.surface, (self.x + 10 if self.state == ButtonState.PRESSED else self.x, self.y))
-            self.dirty = False
+        if self.surface:
+            dest.blit(self.surface, (self.x, self.y + 5 if self.state == ButtonState.PRESSED else self.y))
     
     def action(self) -> None:
         if self.func:
-            self.func()
+            if self.func_arg:
+                try:
+                    iterator = iter(self.func_arg)
+                    self.func(*self.func_arg)
+                except:
+                    self.func(self.func_arg)
+            else:
+                self.func()

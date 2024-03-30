@@ -6,12 +6,13 @@ class Screen(Drawable):
     represents a collection of drawable-type elements. It itself can be drawn
     '''
     
-    def __init__(self, surface: pygame.Surface, x: int = 0, y: int = 0) -> None:
+    def __init__(self, surface: pygame.Surface = None, x: int = 0, y: int = 0) -> None:
         super().__init__(surface, x, y)
         self.elements : list[Drawable] = []
     
     def draw(self, dest: pygame.Surface) -> None:
-        return super().draw(dest)
+        for element in self.elements:
+            element.draw(dest)
 
     def update(self, dt : float, **kwargs) -> None:
         for element in self.elements:
@@ -20,3 +21,6 @@ class Screen(Drawable):
     def handle_event(self, event : pygame.event.Event) -> None:
         for element in self.elements:
             element.handle_event(event)
+
+    def add_element(self, element):
+        self.elements.append(element)

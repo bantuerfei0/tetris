@@ -1,6 +1,19 @@
 from pygame import Surface
 from screen import Screen
+from drawable import Drawable
+from button import Button
+from asset_manager import AssetManager
+
 
 class TitleScreen(Screen):
-    def __init__(self, surface: Surface, x: int = 0, y: int = 0) -> None:
-        super().__init__(surface, x, y)
+    '''I love dependency injection!'''
+    def __init__(self, asset_manager : AssetManager, game) -> None:
+        super().__init__()
+        self.add_element(Drawable(asset_manager.get_logo(), 555, 150)) # the TETRIS logo
+        self.add_element(Button(720, 380, asset_manager.get_buttons()['play'], game.change_screen, PlayScreen(asset_manager, game)))
+        self.add_element(Button(720, 500, asset_manager.get_buttons()['options'], game.change_screen, (OptionsScreen(asset_manager, game), True)))
+        self.add_element(Button(720, 600, asset_manager.get_buttons()['credits'], game.change_screen, 'hello'))
+        self.add_element(Button(1475, 800, asset_manager.get_buttons()['quit'], game.quit))
+
+from play_screen import PlayScreen
+from options_screen import OptionsScreen

@@ -26,7 +26,6 @@ class Slider(Drawable):
     def change_state(self, new_state : ButtonState):
         self.previous_state = self.state
         self.state = new_state
-        self.dirty = True
 
     def handle_event(self, event: pygame.event.Event) -> None:
         match event.type:
@@ -41,7 +40,6 @@ class Slider(Drawable):
             case pygame.MOUSEMOTION:
                 if self.state == ButtonState.PRESSED:
                     self.circle_x += event.rel[0]
-                    self.dirty = True
                 elif self.state == ButtonState.HOVER and not self.bounding_rect.collidepoint(event.pos):
                     self.change_state(ButtonState.DEFAULT)
 
@@ -51,19 +49,17 @@ class Slider(Drawable):
         self.bounding_rect.left = self.circle_x - 25
 
     def draw(self, dest: pygame.Surface) -> None:
-        if self.dirty:
-            # draw line 5 thick, 376 wide #963f0b
-            pygame.draw.line(dest, Slider.BROWN, self.x, self.y, 5)
-            # draw ball F4BB33 DEF, F4BB33 HOVER, 963F0B PRESSED
-            pygame.draw.circle(dest, Slider.BROWN, self.circle_x, 25)
-            match self.state:
-                case ButtonState.DEFAULT:
-                    pygame.draw.circle(dest, Slider.DEHYDRATED_PISS, self.circle_x, 20)
-                case ButtonState.HOVER:
-                    pygame.draw.circle(dest, Slider.BANANA, self.circle_x, 20)
-                case ButtonState.PRESSED:
-                    pygame.draw.circle(dest, Slider.BROWN, self.circle_x, 20)
-            self.dirty = False
+        # draw line 5 thick, 376 wide #963f0b
+        pygame.draw.line(dest, Slider.BROWN, self.x, self.y, 5)
+        # draw ball F4BB33 DEF, F4BB33 HOVER, 963F0B PRESSED
+        pygame.draw.circle(dest, Slider.BROWN, self.circle_x, 25)
+        match self.state:
+            case ButtonState.DEFAULT:
+                pygame.draw.circle(dest, Slider.DEHYDRATED_PISS, self.circle_x, 20)
+            case ButtonState.HOVER:
+                pygame.draw.circle(dest, Slider.BANANA, self.circle_x, 20)
+            case ButtonState.PRESSED:
+                pygame.draw.circle(dest, Slider.BROWN, self.circle_x, 20)
 
     def action(self) -> None:
         if self.func:
