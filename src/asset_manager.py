@@ -52,6 +52,18 @@ class AssetManager:
             temp = pygame.Surface((200, 40), pygame.SRCALPHA)
             temp.blit(self.spritesheet, (0, 0), (1770, 881 + i * 40, 200, 40))
             self.library['text'][text] = temp
+        
+        self.library['text']['artist'] = pygame.Surface((269, 40), pygame.SRCALPHA)
+        self.library['text']['artist'].blit(self.spritesheet, (0, 0), (0, 1161, 269, 40))
+
+        self.library['text']['programmer'] = pygame.Surface((269, 40), pygame.SRCALPHA)
+        self.library['text']['programmer'].blit(self.spritesheet, (0, 0), (0, 1261, 269, 40))
+
+        self.library['text']['kaeirwen'] = pygame.Surface((320, 75), pygame.SRCALPHA)
+        self.library['text']['kaeirwen'].blit(self.spritesheet, (0, 0), (589, 1161, 320, 75))
+        
+        self.library['text']['bantuerfei'] = pygame.Surface((320, 75), pygame.SRCALPHA)
+        self.library['text']['bantuerfei'].blit(self.spritesheet, (0, 0), (269, 1161, 320, 75))
 
         self.library['grid'] = pygame.Surface((417, 817), pygame.SRCALPHA)
         self.library['grid'].blit(self.spritesheet, (0, 0), (1600, 0, 417, 817))
@@ -68,9 +80,25 @@ class AssetManager:
         self.library['logo'].blit(self.spritesheet, (0, 0), (1220, 987, 500, 150))
 
         self.library['game_over'] = pygame.Surface((500, 100), pygame.SRCALPHA)
-        self.library['game_over'].blit(self.spritesheet, (0, 0), (0, 1161, 500, 100))
+        self.library['game_over'].blit(self.spritesheet, (0, 0), (1480, 1161, 500, 100))
 
-        self.library['icons'] = dict()
+        self.library['music'] = dict()
+        self.library['sound'] = dict()
+
+        self.library['music'][True] = pygame.Surface((55, 50), pygame.SRCALPHA)
+        self.library['music'][True].blit(self.spritesheet, (0, 0), (964, 1161, 55, 50))
+
+        self.library['music'][False] = pygame.Surface((55, 50), pygame.SRCALPHA)
+        self.library['music'][False].blit(self.spritesheet, (0, 0), (1019, 1161, 55, 50))
+
+        self.library['sound'][True] = pygame.Surface((55, 50), pygame.SRCALPHA)
+        self.library['sound'][True].blit(self.spritesheet, (0, 0), (1924, 817, 55, 50))
+
+        self.library['sound'][False] = pygame.Surface((55, 50), pygame.SRCALPHA)
+        self.library['sound'][False].blit(self.spritesheet, (0, 0), (909, 1161, 55, 50))
+    
+    def get_small_frame(self) -> pygame.Surface:
+        return self.library['game_small_frame']
 
     def get_icon(self) -> pygame.Surface:
         return self.library['icon']
@@ -86,3 +114,21 @@ class AssetManager:
     
     def get_text(self) -> dict:
         return self.library['text']
+
+    def get_numbers(self) -> dict:
+        return self.library['numbers']
+    
+    def get_music_icons(self) -> dict:
+        return self.library['music']
+    
+    def get_sound_icons(self) -> dict:
+        return self.library['sound']
+    
+    def get_grid(self) -> pygame.Surface:
+        return self.library['grid']
+
+    def get_game_piece(self) -> pygame.Surface:
+        return self.library['game_piece']
+
+    def get_small_frame(self) -> pygame.Surface:
+        return self.library['game_small_frame']

@@ -4,15 +4,18 @@ import sys
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1' # hide pygame start message
 
 import pygame
-import random
 from screen import Screen
 from drawable import Drawable
 from asset_manager import AssetManager
+
+# YOU HAVE 6. REMEMBER. 6
+
 from title_screen import TitleScreen
 from game_over_screen import GameOverScreen
 from options_screen import OptionsScreen
 from pause_screen import PauseScreen
 from play_screen import PlayScreen
+from credits_screen import CreditsScreen
 
 class Game:
     DIMENSIONS : tuple = (1600, 900) # unscaled size
@@ -29,20 +32,23 @@ class Game:
         pygame.display.set_icon(self.asset_manager.get_icon())
         self.scaled_surface_position : tuple = (0, 0) # where to draw the scaled surface
         self.scaled_surface_dimensions : tuple = Game.DIMENSIONS
+        self.previous_screen = None
         self.running = False
         self.screen_dict = {
             'title' : TitleScreen(self.asset_manager, self),
-            'play' : PlayScreen(self.asset_manager, self),
-            'options' : PlayScreen(self.asset_manager, self),
-            'game_over' : PlayScreen(self.asset_manager, self),
-            'play' : PlayScreen(self.asset_manager, self),
-
+            'play' : PlayScreen(self.asset_manager, self)
         }
-        self.main_screen : Screen = TitleScreen(self.asset_manager, self) # do more later
+        self.overlay_dict = {
+            'options' : OptionsScreen(self.asset_manager, self),
+            'game_over' : GameOverScreen(self.asset_manager, self),
+            'pause' : PauseScreen(self.asset_manager, self),
+            'credits' : CreditsScreen(self.asset_manager, self)
+        }
+        self.main_screen : Screen = self.screen_dict['title'] # do more later
         self.overlay_screen : Screen = None
         self.overlay_background = pygame.Surface(Game.DIMENSIONS)
         self.overlay_background.fill((0, 0, 0))
-        self.overlay_background.set_alpha(170)
+        self.overlay_background.set_alpha(191)
     
     def draw(self) -> None:
         self.surface.blit(self.asset_manager.get_background(), (0, 0))
@@ -91,12 +97,18 @@ class Game:
     def quit(self) -> None:
         self.running = False
 
-    def change_screen(self, screen : Screen, overlay : bool = False):
-        if overlay:
-            self.overlay_screen = screen
-        else:
-            self.main_screen = screen
-            self.overlay_screen = None
+    def get_screen(self, key : str) -> Screen:
+        return self.screen_dict[key]
+
+    def get_overlay(self, key : str) -> Screen:
+        return self.overlay_dict[key]
+
+    def change_screen(self, key : str):
+        self.main_screen = self.screen_dict[key]
+        self.overlay_screen = None
+    
+    def change_overlay(self, key : str):
+        self.overlay_screen = self.overlay_dict[key]
 
     def run(self) -> None:
         self.running = True
@@ -107,7 +119,7 @@ class Game:
             self.update(dt)
             self.draw()
             pygame.display.flip() # maybe replace with .update() and rects
-            self.clock.tick()
+            self.clock.tick(30)
         pygame.image.save(self.surface, './screenshot.png')
 
 if __name__ == '__main__':
