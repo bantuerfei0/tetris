@@ -1,16 +1,4 @@
-'''
-bantuerfei
-2024-03-20
-For cleaner code and modularity
-'''
-
-import pygame
 from enum import Enum
-
-class ButtonState(Enum):
-    DEFAULT = 0
-    HOVER = 1
-    PRESSED = 2
 
 class TileType(Enum):
     '''used to define the type of a tile (color)'''
@@ -22,13 +10,6 @@ class TileType(Enum):
     PURPLE = 5
     RED = 6
     YELLOW = 7
-
-class GameState(Enum):
-    TITLE = 0
-    PLAY = 1
-    LEADERBOARD = 2
-    OPTIONS = 3
-    CREDITS = 4
 
 class Tetromino(Enum):
     '''used to define the default shape of tetrominos'''

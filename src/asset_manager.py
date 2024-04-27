@@ -1,6 +1,7 @@
 import pygame
 import sys
 from button import ButtonState
+from tile_enums import TileType
 
 class AssetManager:
     
@@ -96,6 +97,19 @@ class AssetManager:
 
         self.library['sound'][False] = pygame.Surface((55, 50), pygame.SRCALPHA)
         self.library['sound'][False].blit(self.spritesheet, (0, 0), (909, 1161, 55, 50))
+    
+        self.library['tiles'] = dict()
+        
+        for i in range(7):
+            tile_surfaces = []
+            for j in range(3):
+                tile_surface = pygame.Surface((40, 40), pygame.SRCALPHA)
+                tile_surface.blit(self.spritesheet, (0, 0), (269 + 40 * i, 1261 + 40 * j, 40, 40))
+                tile_surfaces.append(tile_surface)
+            self.library['tiles'][list(TileType)[i+1]] = tile_surfaces
+
+    def get_tiles(self) -> dict:
+        return self.library['tiles']
     
     def get_small_frame(self) -> pygame.Surface:
         return self.library['game_small_frame']

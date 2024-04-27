@@ -100,8 +100,15 @@ class Game:
     def get_screen(self, key : str) -> Screen:
         return self.screen_dict[key]
 
-    def get_overlay(self, key : str) -> Screen:
+    def get_overlay(self, key : str) -> Screen: 
         return self.overlay_dict[key]
+
+    def go_back(self):
+        if self.main_screen != self.screen_dict['title']:
+            self.overlay_screen = self.overlay_dict['pause']
+        else:
+            self.main_screen = self.screen_dict['title']
+            self.overlay_screen = None
 
     def change_screen(self, key : str):
         self.main_screen = self.screen_dict[key]
@@ -119,7 +126,7 @@ class Game:
             self.update(dt)
             self.draw()
             pygame.display.flip() # maybe replace with .update() and rects
-            self.clock.tick(30)
+            self.clock.tick(60)
         pygame.image.save(self.surface, './screenshot.png')
 
 if __name__ == '__main__':

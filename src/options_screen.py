@@ -1,5 +1,6 @@
 from screen import Screen
 from asset_manager import AssetManager
+import pygame
 from drawable import Drawable
 from button import Button
 from slider import Slider
@@ -11,7 +12,7 @@ class OptionsScreen(Screen):
     def __init__(self, asset_manager : AssetManager, game) -> None:
         super().__init__()
         self.add_element(Drawable(asset_manager.get_text()['options'], 571, 122)) # the TETRIS logo
-        self.add_element(Button(483, 109, asset_manager.get_buttons()['back'], game.change_screen, 'title'))
+        self.add_element(Button(483, 109, asset_manager.get_buttons()['back'], game.go_back))
         self.add_element(Drawable(asset_manager.get_small_frame(), 1020, 250))
         self.add_element(Drawable(asset_manager.get_small_frame(), 1020, 360))
         self.sound_percent_label = NumberLabel(asset_manager, 1063, 260, True, False, True, 3)
@@ -36,4 +37,13 @@ class OptionsScreen(Screen):
         percent = int(value*100)
         self.sound_percent_label.set_value(percent)
         # update sound
+    
+    def handle_event(self, event: pygame.event.Event) -> None:
+        super().handle_event(event)
+        match event.type:
+            case pygame.KEYDOWN:
+                match event.key:
+                    case pygame.K_ESCAPE:
+                        # get out of there
+                        self.game.go_back() # maybe change to "go back"
 

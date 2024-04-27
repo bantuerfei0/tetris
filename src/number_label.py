@@ -5,7 +5,7 @@ import math
 
 class NumberLabel(Drawable):
     UPDATE_THRESH = 10
-    STEP = 1
+    STEP = 5
     WIDTH = 23
     REAL_WIDTH = 40
     '''the position is the position it will try to stay centered on'''
