@@ -66,6 +66,9 @@ class AssetManager:
         self.library['text']['bantuerfei'] = pygame.Surface((320, 75), pygame.SRCALPHA)
         self.library['text']['bantuerfei'].blit(self.spritesheet, (0, 0), (269, 1161, 320, 75))
 
+        self.library['text']['game_over'] = pygame.Surface((500, 100), pygame.SRCALPHA)
+        self.library['text']['game_over'].blit(self.spritesheet, (0, 0), (1480, 1161, 500, 100))
+
         self.library['grid'] = pygame.Surface((417, 817), pygame.SRCALPHA)
         self.library['grid'].blit(self.spritesheet, (0, 0), (1600, 0, 417, 817))
 

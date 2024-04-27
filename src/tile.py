@@ -11,7 +11,7 @@ class Tile:
     '''
     BLINK_DURATION = 100
     WHITE_SQUARE = pygame.Surface((40, 40))
-    WHITE_SQUARE.fill((254, 245, 229))
+    WHITE_SQUARE.fill((255, 240, 214))
     
     def __init__(self, type : TileType, asset_manager : AssetManager) -> None:
         self.asset_manager = asset_manager

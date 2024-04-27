@@ -29,6 +29,10 @@ class NumberLabel(Drawable):
         for i, character in enumerate(displayed_string):
             dest.blit(self.asset_manager.get_numbers()[character], (draw_x + i * NumberLabel.WIDTH, self.y + 5 + (3 * math.sin(10*i)) + 2 * math.sin(math.pi/4 * self.inertia * i) if self.do_animation else self.y))
 
+    def reset(self, value):
+        self.inertia = value
+        self.value = value
+        
     def update(self, dt, **kwargs):
         if self.do_animation:
             self.update_accumulator += dt

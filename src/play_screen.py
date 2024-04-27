@@ -47,6 +47,7 @@ class PlayScreen(Screen):
         # controls related
 
         self.paused = False
+        self.game_over = False
 
         self.grid : list[list[Tile]] = []
         self.score = 0
@@ -95,12 +96,14 @@ class PlayScreen(Screen):
 
     def reset_game(self):
         self.reset_grid()
+        self.game_over = False
+        self.calculate_gravity()
         self.score = 0
         self.lines = 0
         self.level = 0
-        self.score_label.set_value(self.score)
-        self.lines_label.set_value(self.lines)
-        self.level_label.set_value(self.level)
+        self.score_label.reset(0)
+        self.lines_label.reset(0)
+        self.level_label.reset(0)
         self.next_tetromino = [[Tile(i, self.asset_manager) for i in j] for j in self.generate_next_tetromino().value]
         self.create_tetromino() # creates an active tetromino from the next tetromino & then cycles a "next"
 
@@ -214,7 +217,7 @@ class PlayScreen(Screen):
             for j, x in enumerate(y):
                 if x.get_type() != TileType.EMPTY:
                     x.update(dt)
-        if self.paused:
+        if self.paused or self.game_over:
             return
         if not self.have_swapped_hold and self.should_hold:
             self.should_hold = False
@@ -295,6 +298,12 @@ class PlayScreen(Screen):
         for i, y in enumerate(self.active_tetromino):
             for j, x in enumerate(y):
                 if x.get_type() != TileType.EMPTY:
+                    if self.grid[self.active_tetromino_y+i][self.active_tetromino_x+j].get_type() != TileType.EMPTY:
+                        # game should end if it ever tries this
+                        self.game_over = True
+                        self.game.change_overlay('game_over')
+                        self.game.get_overlay('game_over').set_score(self.score) # 1 update behind
+                        return
                     self.grid[self.active_tetromino_y+i][self.active_tetromino_x+j] = x
 
     def check_shift(self, moving_right) -> bool:
