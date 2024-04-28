@@ -110,6 +110,25 @@ class AssetManager:
                 tile_surface.blit(self.spritesheet, (0, 0), (269 + 40 * i, 1261 + 40 * j, 40, 40))
                 tile_surfaces.append(tile_surface)
             self.library['tiles'][list(TileType)[i+1]] = tile_surfaces
+        
+        sounds_path = './assets/sounds/'
+        if getattr(sys, 'frozen', False):
+            sounds_path = ''
+
+        self.library['sounds'] = dict()
+
+        hard_drop_sounds = [pygame.mixer.Sound(f'{sounds_path}harddrop{i+1}.wav') for i in range(4)]
+
+        self.library['sounds']['harddrop'] = hard_drop_sounds
+
+        self.library['sounds']['clear'] = pygame.mixer.Sound(f'{sounds_path}clear.wav')
+
+        self.library['sounds']['cleartetris'] = pygame.mixer.Sound(f'{sounds_path}cleartetris.wav')
+        self.library['sounds']['defeat'] = pygame.mixer.Sound(f'{sounds_path}defeat.wav')
+        self.library['sounds']['click'] = pygame.mixer.Sound(f'{sounds_path}click.wav')
+    
+    def get_sounds(self) -> dict:
+        return self.library['sounds']
 
     def get_tiles(self) -> dict:
         return self.library['tiles']

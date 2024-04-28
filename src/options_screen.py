@@ -12,7 +12,7 @@ class OptionsScreen(Screen):
     def __init__(self, asset_manager : AssetManager, game) -> None:
         super().__init__()
         self.add_element(Drawable(asset_manager.get_text()['options'], 571, 122)) # the TETRIS logo
-        self.add_element(Button(483, 109, asset_manager.get_buttons()['back'], game.go_back))
+        self.add_element(Button(asset_manager, 483, 109, asset_manager.get_buttons()['back'], game.go_back))
         self.add_element(Drawable(asset_manager.get_small_frame(), 1020, 250))
         self.add_element(Drawable(asset_manager.get_small_frame(), 1020, 360))
         self.sound_percent_label = NumberLabel(asset_manager, 1063, 260, True, False, True, 3)

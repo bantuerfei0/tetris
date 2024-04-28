@@ -7,6 +7,7 @@ from tile import Tile
 from tile_enums import TileType, Tetromino
 import random
 import math
+from particle import Particle
 
 class PlayScreen(Screen):
 
@@ -44,8 +45,9 @@ class PlayScreen(Screen):
         self.lines_label = NumberLabel(asset_manager, 1122, 808, True, False, True, 3)
         self.add_element(self.lines_label) # lines
 
-        # controls related
+        self.particles : list[Particle] = []
 
+        # controls related
         self.paused = False
         self.game_over = False
 
@@ -67,7 +69,11 @@ class PlayScreen(Screen):
         self.repeat_rotate_accumulator = 0
         self.gravity_accumulator = 0
 
+
         self.next_delay = 0
+
+        self.should_spawn_new = False
+
 
         # game related
         self.gravity = 800
@@ -78,7 +84,6 @@ class PlayScreen(Screen):
 
         self.ghost_tetromino_y = 0
 
-        self.active_tetromino_type = None
         self.active_tetromino : list[list[Tile]] = [] # the array itself
 
         self.held_tetromino : list[list[Tile]] = [] # the array itself. mainly used for visuals
@@ -95,15 +100,25 @@ class PlayScreen(Screen):
         self.paused = False
 
     def reset_game(self):
+        self.should_rotate_left = False
+        self.should_rotate_right = False
+        self.should_shift_left = False
+        self.should_shift_right = False
+        self.should_hard_drop = False
+        self.should_hold = False
+        self.have_swapped_hold = False
+        self.should_soft_drop = False
         self.reset_grid()
         self.game_over = False
-        self.calculate_gravity()
+        self.paused = False
         self.score = 0
         self.lines = 0
         self.level = 0
+        self.calculate_gravity()
         self.score_label.reset(0)
         self.lines_label.reset(0)
         self.level_label.reset(0)
+        self.held_tetromino.clear()
         self.next_tetromino = [[Tile(i, self.asset_manager) for i in j] for j in self.generate_next_tetromino().value]
         self.create_tetromino() # creates an active tetromino from the next tetromino & then cycles a "next"
 
@@ -149,7 +164,8 @@ class PlayScreen(Screen):
                         self.game.change_overlay('pause')
                         self.paused = True
                     case pygame.K_c:
-                        self.should_hold = True
+                        if not self.have_swapped_hold:
+                            self.should_hold = True
                     case pygame.K_DOWN:
                         self.should_soft_drop = True
                     case pygame.K_UP:
@@ -198,6 +214,11 @@ class PlayScreen(Screen):
 
     def update(self, dt: int, **kwargs) -> None:
         super().update(dt, **kwargs)
+        new_particles = []
+        for particle in self.particles:
+            if particle.update(dt):
+                new_particles.append(particle)
+        self.particles = new_particles
         for i, y in enumerate(self.grid):
             for j, x in enumerate(y):
                 if x.get_type() != TileType.EMPTY and i >= PlayScreen.GRID_BUFFER:
@@ -219,69 +240,100 @@ class PlayScreen(Screen):
                     x.update(dt)
         if self.paused or self.game_over:
             return
-        if not self.have_swapped_hold and self.should_hold:
-            self.should_hold = False
-            self.have_swapped_hold = True
-            if not self.held_tetromino:
-                self.held_tetromino = self.active_tetromino
-                self.create_tetromino()
-            else:
-                temp = self.active_tetromino
-                self.active_tetromino = self.held_tetromino
-                self.held_tetromino = temp
-                self.active_tetromino_x = math.floor((PlayScreen.GRID_WIDTH - len(self.active_tetromino[0]))/2)
-                self.active_tetromino_y = 0
-            self.held_piece_indices = self.get_tetromino_size(self.held_tetromino)
-            self.held_piece_size = ((self.held_piece_indices[0] - self.held_piece_indices[1] + 1) * 40, (self.held_piece_indices[2] - self.held_piece_indices[3] + 1) * 40)
-        
-        self.repeat_rotate_accumulator += dt
-        self.repeat_shift_accumulator += dt
-        if self.repeat_rotate_accumulator >= PlayScreen.REPEATED_ROTATION_DELAY and (self.should_rotate_left or self.should_rotate_right):
-            self.repeat_rotate_accumulator = 0
-            if self.should_rotate_left and self.check_rotation(False):
-                self.active_tetromino = self.rotate_matrix(self.active_tetromino, False)
-            if self.should_rotate_right and self.check_rotation(True):
-                self.active_tetromino = self.rotate_matrix(self.active_tetromino, True)
-        if self.repeat_shift_accumulator >= PlayScreen.REPEATED_SHIFT_DELAY and (self.should_shift_left or self.should_shift_right):
-            self.repeat_shift_accumulator = 0
-            if self.should_shift_left and self.check_shift(False):
-                self.active_tetromino_x-=1
-            if self.should_shift_right and self.check_shift(True):
-                self.active_tetromino_x+=1
-        self.ghost_tetromino_y = self.active_tetromino_y
-        while self.check_valid_grid(self.active_tetromino_x, self.ghost_tetromino_y+1, self.active_tetromino):
-            self.ghost_tetromino_y+=1
-        if self.should_hard_drop:
-            self.active_tetromino_y = self.ghost_tetromino_y
-            self.should_hard_drop = False
-            self.gravity_accumulator = self.gravity
-        self.gravity_accumulator += dt
-        if self.gravity_accumulator >= self.gravity or (self.should_soft_drop and self.gravity_accumulator >= 50):
-            self.gravity_accumulator = 0
-            if self.check_bottom():
-                self.active_tetromino_y+=1
-            else:
-                self.ghost_tetromino_y = 0 # fixes a visual bug
-                self.have_swapped_hold = False
-                self.lock_tetromino()
-                self.check_lines()
-                self.create_tetromino()
+        if self.next_delay > 0:
+            self.next_delay-=dt
+        else:
+            if not self.have_swapped_hold and self.should_hold:
+                self.should_hold = False
+                self.have_swapped_hold = True
+                if not self.held_tetromino:
+                    self.held_tetromino = self.active_tetromino
+                    self.create_tetromino()
+                else:
+                    temp = self.active_tetromino
+                    self.active_tetromino = self.held_tetromino
+                    self.held_tetromino = temp
+                    self.active_tetromino_x = math.floor((PlayScreen.GRID_WIDTH - len(self.active_tetromino[0]))/2)
+                    self.active_tetromino_y = 0
+                self.held_piece_indices = self.get_tetromino_size(self.held_tetromino)
+                self.held_piece_size = ((self.held_piece_indices[0] - self.held_piece_indices[1] + 1) * 40, (self.held_piece_indices[2] - self.held_piece_indices[3] + 1) * 40)
+            
+            self.repeat_rotate_accumulator += dt
+            self.repeat_shift_accumulator += dt
+            if self.repeat_rotate_accumulator >= PlayScreen.REPEATED_ROTATION_DELAY and (self.should_rotate_left or self.should_rotate_right):
+                self.repeat_rotate_accumulator = 0
+                if self.should_rotate_left and self.check_rotation(False):
+                    self.active_tetromino = self.rotate_matrix(self.active_tetromino, False)
+                if self.should_rotate_right and self.check_rotation(True):
+                    self.active_tetromino = self.rotate_matrix(self.active_tetromino, True)
+            if self.repeat_shift_accumulator >= PlayScreen.REPEATED_SHIFT_DELAY and (self.should_shift_left or self.should_shift_right):
+                self.repeat_shift_accumulator = 0
+                if self.should_shift_left and self.check_shift(False):
+                    self.active_tetromino_x-=1
+                if self.should_shift_right and self.check_shift(True):
+                    self.active_tetromino_x+=1
+            self.ghost_tetromino_y = self.active_tetromino_y
+            while self.check_valid_grid(self.active_tetromino_x, self.ghost_tetromino_y+1, self.active_tetromino):
+                self.ghost_tetromino_y+=1
+            if self.should_hard_drop:
+                self.active_tetromino_y = self.ghost_tetromino_y
+                self.should_hard_drop = False
+                self.gravity_accumulator = self.gravity
+                random.choice(self.asset_manager.get_sounds()['harddrop']).play()
+            
+            self.gravity_accumulator += dt
+            if self.gravity_accumulator >= self.gravity or (self.should_soft_drop and self.gravity_accumulator >= 50):
+                self.gravity_accumulator = 0
+                if self.check_bottom():
+                    self.active_tetromino_y+=1
+                else:
+                    self.ghost_tetromino_y = 0 # fixes a visual bug
+                    self.have_swapped_hold = False
+                    self.lock_tetromino()
+                    self.next_delay = 0
+                    self.check_lines_visual()
+                    self.should_spawn_new = True
 
-    def check_lines(self):
-        new_grid = self.grid
-        cleared_lines = 0
+        if self.should_spawn_new and self.next_delay <= 0:
+            self.create_tetromino()
+            self.check_lines()
+            self.should_spawn_new = False
+    
+    def check_lines_visual(self):
         for i, y in enumerate(self.grid):
             full_line = True
             for x in y:
                 if x.get_type() == TileType.EMPTY:
                     full_line = False
             if full_line:
-                #new_grid.pop(i)
-                #new_grid.insert(0, [Tile(TileType.EMPTY, self.asset_manager) for i in range(PlayScreen.GRID_WIDTH)])
-                for s in new_grid[i]:
+                for s in self.grid[i]:
                     s.kill()
+                self.next_delay = 700
+
+    def check_lines(self):
+        new_grid = self.grid
+        cleared_lines = 0
+        upper_y = -1
+        lower_y = -1
+        for i, y in enumerate(self.grid):
+            full_line = True
+            for x in y:
+                if x.get_type() == TileType.EMPTY:
+                    full_line = False
+            if full_line:
+                if upper_y == -1:
+                    upper_y = i
+                if i > lower_y:
+                    lower_y = i
+                new_grid.pop(i)
+                new_grid.insert(0, [Tile(TileType.EMPTY, self.asset_manager) for i in range(PlayScreen.GRID_WIDTH)])
                 cleared_lines+=1
+        
         if cleared_lines > 0:
+            if cleared_lines == 4:
+                self.asset_manager.get_sounds()['cleartetris'].play()
+            else:
+                self.asset_manager.get_sounds()['clear'].play()
             self.lines += cleared_lines
             self.lines_label.set_value(self.lines)
             self.score += (self.level+1)* (2*cleared_lines-1) * 100
@@ -289,6 +341,9 @@ class PlayScreen(Screen):
             self.level = math.floor(self.lines / 10)
             self.level_label.set_value(self.level)
             self.calculate_gravity()
+            for j in range(50 * cleared_lines):
+                # TODO: ADD CALULATIONS WOW!
+                self.particles.append(Particle(610 + random.randint(0, 400), 40 * upper_y + random.randint(0, 40 * (lower_y-upper_y)), cleared_lines >= 4)) # do random calculation
         self.grid = new_grid
 
     def calculate_gravity(self):
@@ -298,13 +353,15 @@ class PlayScreen(Screen):
         for i, y in enumerate(self.active_tetromino):
             for j, x in enumerate(y):
                 if x.get_type() != TileType.EMPTY:
-                    if self.grid[self.active_tetromino_y+i][self.active_tetromino_x+j].get_type() != TileType.EMPTY:
+                    if self.active_tetromino_y + i < PlayScreen.GRID_BUFFER:
                         # game should end if it ever tries this
                         self.game_over = True
-                        self.game.change_overlay('game_over')
-                        self.game.get_overlay('game_over').set_score(self.score) # 1 update behind
-                        return
                     self.grid[self.active_tetromino_y+i][self.active_tetromino_x+j] = x
+        self.active_tetromino.clear()
+        if self.game_over:
+            self.asset_manager.get_sounds()['defeat'].play()
+            self.game.change_overlay('game_over')
+            self.game.get_overlay('game_over').set_score(self.score) # 1 update behind
 
     def check_shift(self, moving_right) -> bool:
         return self.check_valid_grid(self.active_tetromino_x+(1 if moving_right else -1), self.active_tetromino_y, self.active_tetromino)
@@ -359,3 +416,6 @@ class PlayScreen(Screen):
             for j, x in enumerate(y):
                 if x.get_type() != TileType.EMPTY:
                     dest.blit(x.get_surface(), (PlayScreen.HOLD_X_OFFSET + 5 + (160 - self.held_piece_size[0]) / 2 + 40 * (j-self.held_piece_indices[1]), PlayScreen.HOLD_Y_OFFSET + 5 + (160 - self.held_piece_size[1]) / 2 + 40 * (i-self.held_piece_indices[3])))
+        
+        for particle in self.particles:
+            particle.draw(dest)

@@ -1,3 +1,12 @@
+'''
+campbell's suggestions:
+
+visuals/music
+moving background
+wall kicking
+working music sliders
+keybinding options
+'''
 import os
 import sys
 
@@ -7,9 +16,6 @@ import pygame
 from screen import Screen
 from drawable import Drawable
 from asset_manager import AssetManager
-
-# YOU HAVE 6. REMEMBER. 6
-
 from title_screen import TitleScreen
 from game_over_screen import GameOverScreen
 from options_screen import OptionsScreen
@@ -22,6 +28,8 @@ class Game:
     FLAGS : int = pygame.RESIZABLE | pygame.NOFRAME # window flags
 
     def __init__(self) -> None:
+        pygame.mixer.init()
+        pygame.mixer.set_num_channels(8)
         # 2 surfaces for scaling
         self._surface = pygame.display.set_mode(Game.DIMENSIONS, Game.FLAGS)
         self.surface = pygame.surface.Surface(Game.DIMENSIONS)
@@ -126,8 +134,7 @@ class Game:
             self.update(dt)
             self.draw()
             pygame.display.flip() # maybe replace with .update() and rects
-            self.clock.tick(60)
-        pygame.image.save(self.surface, './screenshot.png')
+            self.clock.tick(120)
 
 if __name__ == '__main__':
     if getattr(sys, 'frozen', False):

@@ -12,13 +12,14 @@ class Tile:
     BLINK_DURATION = 100
     WHITE_SQUARE = pygame.Surface((40, 40))
     WHITE_SQUARE.fill((255, 240, 214))
-    
+    WHITE_SQUARE.set_alpha(158)
+
     def __init__(self, type : TileType, asset_manager : AssetManager) -> None:
         self.asset_manager = asset_manager
         self.type = type
         self.state = 0
         self.blink_accum = 0
-        self.next_blink_threshold = random.randint(3000, 5000)
+        self.next_blink_threshold = random.randint(0, 3000)
         self.blink_duration = Tile.BLINK_DURATION
         self.alpha_accumulator = 0
         self.alpha = 0
@@ -38,7 +39,7 @@ class Tile:
         if self.state == 0 and self.blink_accum >= self.next_blink_threshold:
             self.state = 1
             self.blink_accum = 0
-            self.next_blink_threshold = random.randint(3000, 5000)
+            self.next_blink_threshold = random.randint(4000, 7000)
             self.blink_duration = Tile.BLINK_DURATION
 
         if self.state == 1:
@@ -55,7 +56,7 @@ class Tile:
         surface : pygame.Surface = self.asset_manager.get_tiles()[self.type][self.state].copy()
         if self.state == 2:
             if self.draw_white == 1:
-                return Tile.WHITE_SQUARE
+                surface.blit(Tile.WHITE_SQUARE, (0, 0))
         if faded:
             surface.set_alpha(self.alpha)
         return surface

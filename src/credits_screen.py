@@ -11,7 +11,7 @@ class CreditsScreen(Screen):
     def __init__(self, asset_manager : AssetManager, game) -> None:
         super().__init__()
         self.asset_manager = asset_manager
-        self.add_element(Button(483, 109, asset_manager.get_buttons()['back'], game.change_screen, 'title'))
+        self.add_element(Button(asset_manager, 483, 109, asset_manager.get_buttons()['back'], game.change_screen, 'title'))
         self.add_element(Drawable(asset_manager.get_text()['programmer'], 683, 306))
         self.add_element(Drawable(asset_manager.get_text()['bantuerfei'], 644, 368))
         self.add_element(Drawable(asset_manager.get_text()['artist'], 740, 471))

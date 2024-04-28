@@ -12,10 +12,11 @@ class Button(Drawable):
     represents a pressable element in a screen
     '''
 
-    def __init__(self, x: int = 0, y: int = 0, states : dict = None, func = None, func_arg = None) -> None:
+    def __init__(self, asset_manager, x: int = 0, y: int = 0, states : dict = None, func = None, func_arg = None) -> None:
         super().__init__(None, x, y)
         self.states = states
         self.func = func
+        self.asset_manager = asset_manager
         self.func_arg = func_arg
         self.state : ButtonState = ButtonState.DEFAULT
         self.previous_state : ButtonState = None
@@ -53,6 +54,7 @@ class Button(Drawable):
             dest.blit(self.surface, (self.x, self.y + 5 if self.state == ButtonState.PRESSED else self.y))
     
     def action(self) -> None:
+        self.asset_manager.get_sounds()['click'].play()
         if self.func:
             if self.func_arg:
                 try:

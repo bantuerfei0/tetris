@@ -36,15 +36,22 @@ class NumberLabel(Drawable):
     def update(self, dt, **kwargs):
         if self.do_animation:
             self.update_accumulator += dt
+            # there def is a smarter way to do this
             if self.inertia < self.value:
                 if self.update_accumulator > NumberLabel.UPDATE_THRESH:
                     self.update_accumulator = 0
-                    self.inertia += NumberLabel.STEP
+                    if int((self.value - self.inertia) / 1000) > 0:
+                        self.inertia += 1000
+                    else:
+                        self.inertia += NumberLabel.STEP
             elif self.inertia > self.value:
                 # yeah I don't know what this if statement is. Probably could be done smarter
                 if self.update_accumulator > NumberLabel.UPDATE_THRESH:
                     self.update_accumulator = 0
-                    self.inertia -= NumberLabel.STEP
+                    if int((self.inertia - self.value) / 1000) > 0:
+                        self.inertia -= 1000
+                    else:
+                        self.inertia -= NumberLabel.STEP
     
     def set_value(self, value):
         self.value = value
