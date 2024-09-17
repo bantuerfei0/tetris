@@ -56,6 +56,7 @@ class PlayScreen(Screen):
         self.lines = 0
         self.level = 0
 
+        self.is_on_ground = False
         self.should_rotate_left = False
         self.should_rotate_right = False
         self.should_shift_left = False
@@ -100,6 +101,7 @@ class PlayScreen(Screen):
         self.paused = False
 
     def reset_game(self):
+        self.is_on_ground = False
         self.should_rotate_left = False
         self.should_rotate_right = False
         self.should_shift_left = False
@@ -282,10 +284,11 @@ class PlayScreen(Screen):
                 random.choice(self.asset_manager.get_sounds()['harddrop']).play()
             
             self.gravity_accumulator += dt
-            if self.gravity_accumulator >= self.gravity or (self.should_soft_drop and self.gravity_accumulator >= 50):
+            if self.gravity_accumulator >= self.gravity or (self.should_soft_drop and self.gravity_accumulator >= 50 and not self.is_on_ground):
                 self.gravity_accumulator = 0
                 if self.check_bottom():
                     self.active_tetromino_y+=1
+                    self.is_on_ground = not self.check_bottom()
                 else:
                     self.ghost_tetromino_y = 0 # fixes a visual bug
                     self.have_swapped_hold = False
@@ -298,6 +301,7 @@ class PlayScreen(Screen):
             self.create_tetromino()
             self.check_lines()
             self.should_spawn_new = False
+            self.is_on_ground = False
     
     def check_lines_visual(self):
         for i, y in enumerate(self.grid):
