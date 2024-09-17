@@ -29,13 +29,13 @@ class Tetromino(Enum):
             [TileType.EMPTY, TileType.EMPTY, TileType.EMPTY]
         ]
     J = [
-            [TileType.EMPTY, TileType.EMPTY, TileType.NAVY],
-            [TileType.NAVY, TileType.NAVY, TileType.NAVY],
+            [TileType.EMPTY, TileType.EMPTY, TileType.ORANGE],
+            [TileType.ORANGE, TileType.ORANGE, TileType.ORANGE],
             [TileType.EMPTY, TileType.EMPTY, TileType.EMPTY]
         ]
     L = [
-            [TileType.ORANGE, TileType.EMPTY, TileType.EMPTY],
-            [TileType.ORANGE, TileType.ORANGE, TileType.ORANGE],
+            [TileType.NAVY, TileType.EMPTY, TileType.EMPTY],
+            [TileType.NAVY, TileType.NAVY, TileType.NAVY],
             [TileType.EMPTY, TileType.EMPTY, TileType.EMPTY]
         ]
     S = [

@@ -308,7 +308,7 @@ class PlayScreen(Screen):
             if full_line:
                 for s in self.grid[i]:
                     s.kill()
-                self.next_delay = 700
+                self.next_delay = 350
 
     def check_lines(self):
         new_grid = self.grid
